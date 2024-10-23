@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:little_alchemy_clone/models/model.dart';
-import 'package:little_alchemy_clone/viewmodels/viewmodel.dart';
-import 'package:little_alchemy_clone/views/itemLibraryView.dart';
+import 'package:little_alchemy_clone/data/repositories/isar_item_repository.dart';
+import 'package:little_alchemy_clone/domain/repositories/item_repository.dart';
+import 'package:little_alchemy_clone/views/alchemy_view.dart';
+import 'package:little_alchemy_clone/views/discovered_list.dart';
+import 'package:little_alchemy_clone/views/dragable_test.dart';
 
 void main() {
-  runApp(const MyApp());
+  final IsarItemRepository itemRepository = IsarItemRepository();
+  runApp(MyApp(
+    itemRepository: itemRepository,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ItemRepository itemRepository;
+  MyApp({super.key, required this.itemRepository});
 
   // This widget is the root of your application.
   @override
@@ -34,42 +40,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Itemlibraryview(),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  late ItemListViewModel _viewModel;
-
-  @override
-  void initState() {
-    super.initState();
-    _viewModel = ItemListViewModel(ItemList());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('MVVM Example')),
-      body: ListView.builder(
-        itemCount: _viewModel.items.length,
-        itemBuilder: (context, index) {
-          return ListTile(title: Text(_viewModel.items[index]));
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _viewModel.addItem('New Item');
-          setState(() {});
-        },
-        child: Icon(Icons.add),
-      ),
+      home: Scaffold(
+          appBar: AppBar(
+            title: Text("Drag test"),
+          ),
+          body: AlchemyView(repository: itemRepository)),
     );
   }
 }
