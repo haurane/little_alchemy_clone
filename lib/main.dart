@@ -3,7 +3,7 @@ import 'package:little_alchemy_clone/data/repositories/isar_item_repository.dart
 import 'package:little_alchemy_clone/domain/repositories/item_repository.dart';
 import 'package:little_alchemy_clone/views/alchemy_view.dart';
 import 'package:little_alchemy_clone/views/discovered_list.dart';
-import 'package:little_alchemy_clone/views/dragable_test.dart';
+import 'package:little_alchemy_clone/views/alchemy_field.dart';
 
 void main() {
   final IsarItemRepository itemRepository = IsarItemRepository();

@@ -2,11 +2,11 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 
-class DragableTest extends StatelessWidget {
+class AlchemyField extends StatelessWidget {
 
   Queue<Widget> children;
 
-  DragableTest(this.children);
+  AlchemyField(this.children);
 
   @override
   Widget build(BuildContext context) {

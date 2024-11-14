@@ -6,7 +6,7 @@ import 'package:little_alchemy_clone/domain/models/item.dart';
 import 'package:little_alchemy_clone/domain/repositories/item_repository.dart';
 import 'package:little_alchemy_clone/views/bloc/discovered_items_cubit.dart';
 import 'package:little_alchemy_clone/views/discovered_list.dart';
-import 'package:little_alchemy_clone/views/dragable_test.dart';
+import 'package:little_alchemy_clone/views/alchemy_field.dart';
 import 'package:little_alchemy_clone/views/item_symbol.dart';
 
 class AlchemyView extends StatefulWidget {
@@ -32,7 +32,7 @@ class _AlchemyViewState extends State<AlchemyView> {
       create: (context) => DiscoveredItemsCubit(widget.repository),
       child: Row(
         children: [
-          Expanded(flex: 7, child: DragableTest(itemSymbols)),
+          Expanded(flex: 7, child: AlchemyField(itemSymbols)),
           Expanded(
             flex: 3,
             child: DiscoveredList(

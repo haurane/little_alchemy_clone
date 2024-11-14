@@ -16,18 +16,8 @@ class DiscoveredItemsCubit extends Cubit<List<Item>> {
     emit(discoveredItems);
   }
 
-  Future<void> discoverItem(Item i1, Item i2) async {
-    final discoveries = await repository.discoverItems(i1, i2);
-    for (var item in discoveries) {
-      log(item.name);
-      await repository.updateItem(Item(
-          description: item.description,
-          name: item.name,
-          discoverables: item.discoverables,
-          id: item.id,
-          imgPath: item.imgPath,
-          isDiscovered: true));
-    }
+  Future<void> discoverItem(List<String> names) async {
+    await repository.discoverItems(names);
     loadItems();
   }
 }

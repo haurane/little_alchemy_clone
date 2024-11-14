@@ -3,9 +3,9 @@ import 'package:little_alchemy_clone/domain/models/item.dart';
 abstract class ItemRepository {
   Future<List<Item>> getAllItems();
   Future<List<Item>> getDiscoveredItems();
-  Future<Item> getItemById(int id);
+  Future<Item> getItemByName(String name);
 
-  Future<List<Item>> discoverItems(Item i1, Item i2);
+  Future<void> discoverItems(List<String> names);
 
   Future<void> addItem(Item item);
   

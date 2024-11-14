@@ -26,7 +26,8 @@ class _ItemSymbolState extends State<ItemSymbol> {
 
   _discover(BuildContext context,Item i1, Item i2){
     final itemsCubit = context.read<DiscoveredItemsCubit>();
-    itemsCubit.discoverItem(i1, i2);
+    final names = i1.discoverAll(i2);
+    itemsCubit.discoverItem(names);
   }
 
   @override
