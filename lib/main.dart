@@ -1,12 +1,25 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
+import 'package:little_alchemy_clone/data/models/discoverables.dart';
+import 'package:little_alchemy_clone/data/models/isar_item.dart';
 import 'package:little_alchemy_clone/data/repositories/isar_item_repository.dart';
 import 'package:little_alchemy_clone/domain/repositories/item_repository.dart';
 import 'package:little_alchemy_clone/views/alchemy_view.dart';
 import 'package:little_alchemy_clone/views/discovered_list.dart';
 import 'package:little_alchemy_clone/views/alchemy_field.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() {
-  final IsarItemRepository itemRepository = IsarItemRepository();
+void main() async {
+  log('Starting');
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final dir = await getApplicationDocumentsDirectory();
+
+  final isarDb = await Isar.open([IsarItemSchema, DiscoverablesSchema], directory: dir.path, inspector: true);
+  
+  final IsarItemRepository itemRepository = IsarItemRepository(isarDb);
   runApp(MyApp(
     itemRepository: itemRepository,
   ));
@@ -19,6 +32,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    log("Building main window");
     return MaterialApp(
       title: 'Little Alchemy Clone',
       theme: ThemeData(

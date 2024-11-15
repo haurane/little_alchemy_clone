@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:little_alchemy_clone/data/models/discoverables.dart';
 import 'package:little_alchemy_clone/domain/models/item.dart';
+import 'package:little_alchemy_clone/libraries/string_hash.dart';
 
 part 'isar_item.g.dart';
 
@@ -12,38 +13,38 @@ class IsarItem {
   late bool isDiscovered;
   final discoverables = IsarLinks<Discoverables>();
 
-  Id get isarId => IsarItem.fastHash(name);
+  Id get isarId => fastHash(name);
 
   Item toDomain() {
+    discoverables.load();
+    Map<String,List<String>> discmap = Map();
+    for (var disc in discoverables){
+      var other = disc.sourceItems[0] == name ? disc.sourceItems[1] : disc.sourceItems[0];
+      discmap.addAll({other: disc.discoverables});
+    }
     return Item(
         name: name,
         description: description,
         imgPath: imgPath,
         isDiscovered: isDiscovered,
-        discoverables: {});
+        discoverables: discmap);
   }
 
   static IsarItem fromDomain(Item item) {
-    return IsarItem()
-      ..description = item.description
-      ..name = item.name
-      ..imgPath = item.imgPath
-      ..discoverables = item.discoverables
-      ..isDiscovered = item.isDiscovered;
+    IsarItem iItem = IsarItem();
+    iItem.name = item.name;
+    iItem.description = item.description;
+    iItem.imgPath = item.imgPath;
+    iItem.isDiscovered = item.isDiscovered;
+    
+    item.discoverables.forEach((k,v) {
+      Discoverables d = Discoverables([item.name, k], v);
+      iItem.discoverables.add(d);
+    });
+      
+    
+    return iItem;
   }
 
-  static int fastHash(String name) {
-    var hash = 0xcbf29ce484222325;
-
-    var i = 0;
-    while (i < name.length) {
-      final codeUnit = name.codeUnitAt(i++);
-      hash ^= codeUnit >> 8;
-      hash *= 0x100000001b3;
-      hash ^= codeUnit & 0xFF;
-      hash *= 0x100000001b3;
-    }
-
-    return hash;
-  }
+  
 }

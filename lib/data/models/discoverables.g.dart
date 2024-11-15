@@ -22,10 +22,10 @@ const DiscoverablesSchema = CollectionSchema(
       name: r'discoverables',
       type: IsarType.stringList,
     ),
-    r'item': PropertySchema(
+    r'sourceItems': PropertySchema(
       id: 1,
-      name: r'item',
-      type: IsarType.string,
+      name: r'sourceItems',
+      type: IsarType.stringList,
     )
   },
   estimateSize: _discoverablesEstimateSize,
@@ -55,7 +55,13 @@ int _discoverablesEstimateSize(
       bytesCount += value.length * 3;
     }
   }
-  bytesCount += 3 + object.item.length * 3;
+  bytesCount += 3 + object.sourceItems.length * 3;
+  {
+    for (var i = 0; i < object.sourceItems.length; i++) {
+      final value = object.sourceItems[i];
+      bytesCount += value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -66,7 +72,7 @@ void _discoverablesSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeStringList(offsets[0], object.discoverables);
-  writer.writeString(offsets[1], object.item);
+  writer.writeStringList(offsets[1], object.sourceItems);
 }
 
 Discoverables _discoverablesDeserialize(
@@ -75,10 +81,10 @@ Discoverables _discoverablesDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Discoverables();
-  object.discoverables = reader.readStringList(offsets[0]) ?? [];
-  object.id = id;
-  object.item = reader.readString(offsets[1]);
+  final object = Discoverables(
+    reader.readStringList(offsets[1]) ?? [],
+    reader.readStringList(offsets[0]) ?? [],
+  );
   return object;
 }
 
@@ -92,7 +98,7 @@ P _discoverablesDeserializeProp<P>(
     case 0:
       return (reader.readStringList(offset) ?? []) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringList(offset) ?? []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -107,9 +113,7 @@ List<IsarLinkBase<dynamic>> _discoverablesGetLinks(Discoverables object) {
 }
 
 void _discoverablesAttach(
-    IsarCollection<dynamic> col, Id id, Discoverables object) {
-  object.id = id;
-}
+    IsarCollection<dynamic> col, Id id, Discoverables object) {}
 
 extension DiscoverablesQueryWhereSort
     on QueryBuilder<Discoverables, Discoverables, QWhere> {
@@ -473,13 +477,14 @@ extension DiscoverablesQueryFilter
     });
   }
 
-  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition> itemEqualTo(
+  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
+      sourceItemsElementEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'item',
+        property: r'sourceItems',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -487,7 +492,7 @@ extension DiscoverablesQueryFilter
   }
 
   QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
-      itemGreaterThan(
+      sourceItemsElementGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -495,7 +500,7 @@ extension DiscoverablesQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'item',
+        property: r'sourceItems',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -503,7 +508,7 @@ extension DiscoverablesQueryFilter
   }
 
   QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
-      itemLessThan(
+      sourceItemsElementLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -511,14 +516,15 @@ extension DiscoverablesQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'item',
+        property: r'sourceItems',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition> itemBetween(
+  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
+      sourceItemsElementBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -527,7 +533,7 @@ extension DiscoverablesQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'item',
+        property: r'sourceItems',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -538,13 +544,13 @@ extension DiscoverablesQueryFilter
   }
 
   QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
-      itemStartsWith(
+      sourceItemsElementStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'item',
+        property: r'sourceItems',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -552,13 +558,13 @@ extension DiscoverablesQueryFilter
   }
 
   QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
-      itemEndsWith(
+      sourceItemsElementEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'item',
+        property: r'sourceItems',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -566,22 +572,21 @@ extension DiscoverablesQueryFilter
   }
 
   QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
-      itemContains(String value, {bool caseSensitive = true}) {
+      sourceItemsElementContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'item',
+        property: r'sourceItems',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition> itemMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
+      sourceItemsElementMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'item',
+        property: r'sourceItems',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
@@ -589,22 +594,111 @@ extension DiscoverablesQueryFilter
   }
 
   QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
-      itemIsEmpty() {
+      sourceItemsElementIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'item',
+        property: r'sourceItems',
         value: '',
       ));
     });
   }
 
   QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
-      itemIsNotEmpty() {
+      sourceItemsElementIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'item',
+        property: r'sourceItems',
         value: '',
       ));
+    });
+  }
+
+  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
+      sourceItemsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'sourceItems',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
+      sourceItemsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'sourceItems',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
+      sourceItemsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'sourceItems',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
+      sourceItemsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'sourceItems',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
+      sourceItemsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'sourceItems',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Discoverables, Discoverables, QAfterFilterCondition>
+      sourceItemsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'sourceItems',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 }
@@ -616,19 +710,7 @@ extension DiscoverablesQueryLinks
     on QueryBuilder<Discoverables, Discoverables, QFilterCondition> {}
 
 extension DiscoverablesQuerySortBy
-    on QueryBuilder<Discoverables, Discoverables, QSortBy> {
-  QueryBuilder<Discoverables, Discoverables, QAfterSortBy> sortByItem() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'item', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Discoverables, Discoverables, QAfterSortBy> sortByItemDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'item', Sort.desc);
-    });
-  }
-}
+    on QueryBuilder<Discoverables, Discoverables, QSortBy> {}
 
 extension DiscoverablesQuerySortThenBy
     on QueryBuilder<Discoverables, Discoverables, QSortThenBy> {
@@ -643,18 +725,6 @@ extension DiscoverablesQuerySortThenBy
       return query.addSortBy(r'id', Sort.desc);
     });
   }
-
-  QueryBuilder<Discoverables, Discoverables, QAfterSortBy> thenByItem() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'item', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Discoverables, Discoverables, QAfterSortBy> thenByItemDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'item', Sort.desc);
-    });
-  }
 }
 
 extension DiscoverablesQueryWhereDistinct
@@ -666,10 +736,10 @@ extension DiscoverablesQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Discoverables, Discoverables, QDistinct> distinctByItem(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Discoverables, Discoverables, QDistinct>
+      distinctBySourceItems() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'item', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'sourceItems');
     });
   }
 }
@@ -689,9 +759,10 @@ extension DiscoverablesQueryProperty
     });
   }
 
-  QueryBuilder<Discoverables, String, QQueryOperations> itemProperty() {
+  QueryBuilder<Discoverables, List<String>, QQueryOperations>
+      sourceItemsProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'item');
+      return query.addPropertyName(r'sourceItems');
     });
   }
 }

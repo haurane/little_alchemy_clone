@@ -11,7 +11,7 @@ class IsarItemRepository implements ItemRepository {
   @override
   Future<void> addItem(Item item) async {
     final isarItem = IsarItem.fromDomain(item);
-    return db.txn(() => db.isarItems.put(isarItem));
+    return db.writeTxnSync(() => db.isarItems.putSync(isarItem));
   }
   
   @override
@@ -33,15 +33,24 @@ class IsarItemRepository implements ItemRepository {
   }
   
   @override
-  Future<List<Item>> getDiscoveredItems() {
-    // TODO: implement getDiscoveredItems
-    throw UnimplementedError();
+  Future<List<Item>> getDiscoveredItems() async {
+    final discovered = await db.isarItems.where().filter().isDiscoveredEqualTo(true).findAll();
+    List<Item> discoveredList = List.empty(growable: true);
+    for (var disc in discovered) {
+      discoveredList.add(disc.toDomain());
+    }
+    return discoveredList;
   }
   
   @override
-  Future<Item> getItemByName(String name) {
-    // TODO: implement getItemByName
-    throw UnimplementedError();
+  Future<Item> getItemByName(String name) async {
+    final item = await db.isarItems.where()
+      .filter().nameEqualTo(name).findFirst();
+    if (item != null){
+      return item.toDomain();
+    } else {
+      throw Exception("Item $name not found");
+    } 
   }
   
   @override
