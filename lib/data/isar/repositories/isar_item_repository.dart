@@ -1,5 +1,5 @@
 import 'package:isar/isar.dart';
-import 'package:little_alchemy_clone/data/models/isar_item.dart';
+import 'package:little_alchemy_clone/data/isar/models/isar_item.dart';
 import 'package:little_alchemy_clone/domain/models/item.dart';
 import 'package:little_alchemy_clone/domain/repositories/item_repository.dart';
 

@@ -1,5 +1,5 @@
 import 'package:isar/isar.dart';
-import 'package:little_alchemy_clone/data/models/discoverables.dart';
+import 'package:little_alchemy_clone/data/isar/models/discoverables.dart';
 import 'package:little_alchemy_clone/domain/models/item.dart';
 import 'package:little_alchemy_clone/libraries/string_hash.dart';
 
