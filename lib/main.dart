@@ -30,17 +30,24 @@ void main() async {
   */
   sqfliteFfiInit();
   databaseFactory = databaseFactoryFfi;
+  final dbPath = await getDatabasesPath();
+  log(dbPath);
   final sqlDB = openDatabase(
-    join(await getDatabasesPath(), 'little_alchemy_database.db'),
-    version: 1,
+    join(dbPath, 'little_alchemy_database.db'),
+    version: 3,
     onCreate: (db, version) {
       return db.execute(
           '''CREATE TABLE items (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, description TEXT, imgPath TEXT, isDiscovered BOOLEAN);
              INSERT INTO items (name,description,imgpath,isdiscovered) VALUES 
                 ('water','this is water','assets/icons/water.png',true),
-                ('earth','this is earth','assets/icons/earth',true),
-                ('fire','this is fire','assets/icons/fire.png',true),
-                ('air','this is air','assets/icons/air.png',true);''');
+                ('earth','this is earth','assets/icons/earth.png',true),
+                ('fire','this is fire','assets/icons/fire.png',false),
+                ('air','this is air','assets/icons/air.png',false);
+                
+              CREATE TABLE discoveries (id INTEGER PRIMARY KEY AUTOINCREMENT, source_1_id INTEGER, source_2_id INTEGER, result_id INTEGER,
+                FOREIGN KEY(source_1_id) REFERENCES items(id), FOREIGN KEY (source_2_id) REFERENCES items(id), FOREIGN KEY (result_id) REFERENCES items(id));
+              INSERT INTO discoveries (source_1_id, source_2_id, result_id) VALUES
+                (1,2,3),(1,3,4);''');
     },
   );
 

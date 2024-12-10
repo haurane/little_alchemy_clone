@@ -12,3 +12,9 @@ SELECT i.name
 FROM discoveries d
 JOIN items i ON i.id = d.result_id
 WHERE d.source_1_id = 1 AND d.source_2_id = 2;
+
+SELECT s2.name as source2, res.name as result
+FROM discoveries d
+join items as s2 on d.source_2_id = s2.id
+join items as res on d.result_id = res.id
+WHERE d.source_1_id = 1
